@@ -167,6 +167,15 @@ function autoAnswer() {
                     }
                 }
 
+                // Check if there's a text input field and type the answer
+                const inputField = document.querySelector('textarea, input[type="text"]');
+                if (inputField) {
+                    inputField.value = "Resposta correta."; // Modify this to the correct answer
+                    inputField.dispatchEvent(new Event('input', { bubbles: true })); // Trigger input event for some platforms
+                    sendToast("💬 Typing the answer...", 3000);
+                    await delay(1000);
+                }
+
                 // Look for the "Next Assignment" button (skip video tasks)
                 const nextButton = document.querySelector('[aria-label="Next assignment"]') || document.querySelector('[aria-label="Continue"]');
                 const videoElement = document.querySelector('.video-container');
