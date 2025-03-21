@@ -2,13 +2,13 @@ const ver = "V3.0.5";
 
 // Configurações de atraso para as funcionalidades
 const featureConfigs = {
-    initialDelay: 3000,
-    subsequentDelays: [300, 1500, 500, 2000]
+    initialDelay: 2000, // Reduced initial delay for quicker action
+    subsequentDelays: [200, 1000, 300, 1000] // Reduced delays
 };
 
 // Configurações das funcionalidades
 window.features = {
-    autoAnswer: false,
+    autoAnswer: true,  // Ensure this is set to true to auto-answer
     questionSpoof: true
 };
 
@@ -59,95 +59,22 @@ function findAndClickByClass(className) {
     if (element) {
         element.click();
         if (element.textContent === 'Mostrar resumo') {
-            sendToast("🎉 Exercício concluido!", 3000);
+            sendToast("🎉 Exercício concluído!", 3000);
             playAudio('https://r2.e-z.host/4d0a0bea-60f8-44d6-9e74-3032a64a9f32/4x5g14gj.wav');
         }
     }
     return !!element;
 }
 
-// Função para carregar um script externo
-async function loadScript(url, label) {
-    return fetch(url)
-        .then(response => response.text())
-        .then(script => {
-            eval(script);
-        });
-}
-
-// Função para carregar um arquivo CSS externo
-async function loadCss(url) {
-    return new Promise((resolve) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = url;
-        link.onload = () => resolve();
-        document.head.appendChild(link);
-    });
-}
-
-// Função para modificar as questões (spoof)
-function spoofQuestion() {
-    const phrases = [
-        "🎮💣 Games Destroyer On Top[Discord](https://discord.gg/gamesdest)!",
-        "❓ Made by [@iUnknownBr](https://guns.lol/iunknownbr).",
-        "🏂 Made by [Snow](https://guns.lol/imsnow)"
-    ];
-
-    const originalFetch = window.fetch;
-    window.fetch = async function (input, init) {
-        let body;
-        if (input instanceof Request) body = await input.clone().text();
-        else if (init && init.body) body = init.body;
-
-        const originalResponse = await originalFetch.apply(this, arguments);
-        const clonedResponse = originalResponse.clone();
-
-        try {
-            const responseBody = await clonedResponse.text();
-            let responseObj = JSON.parse(responseBody);
-
-            if (responseObj?.data?.assessmentItem?.item?.itemData) {
-                let itemData = JSON.parse(responseObj.data.assessmentItem.item.itemData);
-
-                if (itemData.question.content[0] === itemData.question.content[0].toUpperCase()) {
-                    itemData.answerArea = {
-                        "calculator": false,
-                        "chi2Table": false,
-                        "periodicTable": false,
-                        "tTable": false,
-                        "zTable": false
-                    };
-
-                    itemData.question.content = phrases[Math.floor(Math.random() * phrases.length)] + `[[☃ radio 1]]`;
-                    itemData.question.widgets = {
-                        "radio 1": {
-                            options: {
-                                choices: [
-                                    { content: "Resposta correta.", correct: true },
-                                    { content: "Resposta Errada.", correct: false }
-                                ]
-                            }
-                        }
-                    };
-
-                    responseObj.data.assessmentItem.item.itemData = JSON.stringify(itemData);
-                    sendToast("🔓 Questão Bypased.", 1000);
-
-                    return new Response(JSON.stringify(responseObj), {
-                        status: originalResponse.status,
-                        statusText: originalResponse.statusText,
-                        headers: originalResponse.headers
-                    });
-                }
-            }
-        } catch (e) {
-            console.error(e);
-        }
-
-        return originalResponse;
-    };
+// Função para detectar o botão "Próxima Atividade" (se disponível) e clicar nele
+function goToNextAssignment() {
+    const nextAssignmentButton = document.querySelector('button[data-next-assignment]'); // Adjust this selector based on the website's structure
+    if (nextAssignmentButton) {
+        nextAssignmentButton.click();
+        sendToast("🚀 Indo para a próxima atividade!", 3000);
+    } else {
+        console.log("Não encontrado 'Próxima Atividade'.");
+    }
 }
 
 // Função para responder automaticamente às questões
@@ -166,6 +93,10 @@ function autoAnswer() {
                         await delay(nextDelay);
                     }
                 }
+
+                // After completing the current task, move to the next assignment
+                goToNextAssignment();
+                await delay(3000); // Pause before moving to the next task
             } else {
                 await delay(1000);
             }
@@ -261,7 +192,6 @@ function showDiscordPopup() {
 
 // Verifica se o script está sendo executado no site correto (English version)
 if (/^https?:\/\/(pt\.)?khanacademy\.org/.test(window.location.href)) {
-    // If we're on a Portuguese version (pt.khanacademy.org), redirect to the English version
     alert("❌ You are on the wrong site. Redirecting to the English site.");
     window.location.href = "https://www.khanacademy.org/"; // Redirect to English version
 }
