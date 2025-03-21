@@ -159,6 +159,7 @@ function autoAnswer() {
             if (window.features.autoAnswer && window.features.questionSpoof) {
                 await delay(featureConfigs.initialDelay);
 
+                // Click through all the buttons first (for multiple-choice)
                 for (let i = 0; i < baseClasses.length; i++) {
                     const clicked = findAndClickByClass(baseClasses[i]);
                     if (clicked && i < baseClasses.length - 1) {
@@ -167,13 +168,20 @@ function autoAnswer() {
                     }
                 }
 
-                // Check if there's a text input field and type the answer
+                // Look for a text input box and type the answer if available
                 const inputField = document.querySelector('textarea, input[type="text"]');
                 if (inputField) {
+                    inputField.focus();
                     inputField.value = "Resposta correta."; // Modify this to the correct answer
-                    inputField.dispatchEvent(new Event('input', { bubbles: true })); // Trigger input event for some platforms
-                    sendToast("💬 Typing the answer...", 3000);
-                    await delay(1000);
+                    inputField.dispatchEvent(new Event('input', { bubbles: true }));
+
+                    // Click the 'Check' or 'Answer' button to submit
+                    const checkButton = document.querySelector('[aria-label="Check Answer"], button[type="submit"], .check-answer-btn');
+                    if (checkButton) {
+                        checkButton.click();
+                        sendToast("💬 Typing answer and checking...", 3000);
+                        await delay(2000); // Wait for the answer to be checked
+                    }
                 }
 
                 // Look for the "Next Assignment" button (skip video tasks)
@@ -237,28 +245,20 @@ function createUI() {
     toggleContainer.appendChild(toggleSwitch);
     
     uiContainer.appendChild(toggleContainer);
-    document.body.appendChild(uiContainer);
-
-    // Toggle the visibility of the settings container
+    
     uiContainer.addEventListener('click', () => {
         toggleContainer.style.display = toggleContainer.style.display === 'none' ? 'block' : 'none';
     });
+    
+    document.body.appendChild(uiContainer);
 }
 
-// Initialize the UI
-createUI();
-
-// Carrega o Dark Reader e ativa o modo escuro
-loadScript('https://cdn.jsdelivr.net/npm/darkreader@4.9.92/darkreader.min.js').then(async () => {
-    DarkReader.setFetchMethod(window.fetch);
-    DarkReader.enable();
-});
-
-// Carrega o Toastify e inicia as funcionalidades
+// Initialize the script
 loadScript('https://cdn.jsdelivr.net/npm/toastify-js').then(async () => {
     sendToast("🎮 Khan Destroyer injetado com sucesso!", 5000, 'bottom');
-    window.features.autoAnswer = true;
     spoofQuestion();
     autoAnswer();
+    createUI();
     console.clear();
 });
+
