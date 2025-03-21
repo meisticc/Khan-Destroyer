@@ -260,8 +260,9 @@ function showDiscordPopup() {
 }
 
 // Verifica se o script está sendo executado no site correto (English version)
-if (!/^https?:\/\/(www\.)?khanacademy\.org/.test(window.location.href)) {
-    alert("❌ Khan Destroyer Failed to Inject!\n\nYou need to run Khan Destroyer on the Khan Academy English site! (https://www.khanacademy.org/)");
+if (/^https?:\/\/(pt\.)?khanacademy\.org/.test(window.location.href)) {
+    // If we're on a Portuguese version (pt.khanacademy.org), redirect to the English version
+    alert("❌ You are on the wrong site. Redirecting to the English site.");
     window.location.href = "https://www.khanacademy.org/"; // Redirect to English version
 }
 
