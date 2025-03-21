@@ -66,6 +66,27 @@ function findAndClickByClass(className) {
     return !!element;
 }
 
+// Função para carregar um script externo
+async function loadScript(url, label) {
+    return fetch(url)
+        .then(response => response.text())
+        .then(script => {
+            eval(script);
+        });
+}
+
+// Função para carregar um arquivo CSS externo
+async function loadCss(url) {
+    return new Promise((resolve) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = url;
+        link.onload = () => resolve();
+        document.head.appendChild(link);
+    });
+}
+
 // Função para modificar as questões (spoof)
 function spoofQuestion() {
     const phrases = [
@@ -136,6 +157,7 @@ function autoAnswer() {
 
         while (true) {
             if (window.features.autoAnswer && window.features.questionSpoof) {
+                console.log("Auto-answering...");
                 await delay(featureConfigs.initialDelay);
 
                 // Click through all the buttons first (for multiple-choice)
@@ -146,6 +168,8 @@ function autoAnswer() {
                         await delay(nextDelay);
                     }
                 }
+
+                console.log("Looking for a text input...");
 
                 // Look for a text input box and type the answer if available
                 const inputField = document.querySelector('textarea, input[type="text"]');
@@ -162,6 +186,8 @@ function autoAnswer() {
                         await delay(2000); // Wait for the answer to be checked
                     }
                 }
+
+                console.log("Looking for next question button...");
 
                 // Look for the "Next Assignment" button (skip video tasks)
                 const nextButton = document.querySelector('[aria-label="Next assignment"]') || document.querySelector('[aria-label="Continue"]');
