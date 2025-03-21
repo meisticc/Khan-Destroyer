@@ -2,49 +2,43 @@
 
  <a href="#"><img src="https://komarev.com/ghpvc/?username=tskbrasil&style=for-the-badge&label=Views:&color=ff69b4"/></a>
 
-**O Khan Destroyer é a ferramenta definitiva para acabar com seus problemas no Khan Academy!**
+**The Khan Destroyer is the ultimate tool to end your Khan Academy problems!**
 
-**Desenvolvidor por: [! im Snow](https://guns.lol/imsnow)&[iUnknowBr](https://guns.lol/iunknownbr)**
+# Resources
+✅ _Automate answers and save time!_
 
-# NOSSO DISCORD!
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/gamesdest)
+✅ _Solve exercises accurately in seconds!_
 
-# Recursos
-✅ _Automatizar respostas e poupar tempo!_
+✅ _Fast forward through modules effortlessly!_
 
-✅ _Resolver exercícios com precisão em segundos!_
+✅ _Maximize your productivity without complications!_
 
-✅ _Avançar rapidamente nos módulos sem esforço!_
+# Instructions
+- Copy the script
 
-✅ _Maximizar sua produtividade sem complicações!_
+⚠️ **ACTIVATE COMPUTER MODE TO USE ON YOUR MOBILE**⚠️
 
+- Add to favorites
 
-# Instruções
-- Copie o script
-  
-⚠️ **ATIVAR O MODO COMPUTADOR PRA USAR NO CELULAR**⚠️ 
+- Open khan academy in the browser **WAIT FOR 100% LOAD**
 
-- Coloque nos favoritos
-
-- Abra o khan academy no navegador **ESPERE CARREGAR 100%**
-
-- Execute o sript e aproveite!!
+- Run the script and enjoy!!
 
 # TUTORIAL🎥
 **https://youtu.be/7LsXym8cR2I?si=KFdFucfcf4LTiLj6**
 *By:kontra*
 
-# Hack/script (copiar)
-⚠️ **ATIVAR O MODO COMPUTADOR PRA USAR NO CELULAR**⚠️ 
+# Hack/script (copy)
+⚠️ **ACTIVATE COMPUTER MODE TO USE ON CELL PHONE**⚠️
 ```js
 javascript:fetch("https://raw.githubusercontent.com/Snowxyrzk/Khan-Destroyer/refs/heads/main/Raw").then(t=>t.text()).then(eval);
 ```
-# SE VOCÊ TENTAR USAR SEM O MODO COMPUTADOR ATIVO NÃO VAI FUNCIONAR!!!!⚠️ 
+# IF YOU TRY TO USE IT WITHOUT ACTIVE COMPUTER MODE IT WILL NOT WORK!!!!⚠️
 
-# AVISOS DE USO📖
-**O Khan Destroyer é uma ferramenta de uso exclusivamente educacional, NÃO AUTORIZAMOS O USO DE TERCEIROS!
-Não é permitido utilizá-lo para fins indevidos ou fraudulentos OU LUCRATIVOS.
-O uso em servidores de terceiros é proibido sem autorização prévia.
- Para permissões e dúvidas, entre em contato antes de qualquer implementação.**
+# USE NOTICES📖
+**Khan Destroyer is a tool for educational use only, WE DO NOT AUTHORIZE THIRD PARTY USE!
+It is not permitted to use it for improper or fraudulent purposes OR FOR PROFIT.
+Use on third party servers is prohibited without prior authorization.
+For permissions and questions, please contact us before any implementation.**
 
 
