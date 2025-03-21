@@ -66,27 +66,6 @@ function findAndClickByClass(className) {
     return !!element;
 }
 
-// Função para carregar um script externo
-async function loadScript(url, label) {
-    return fetch(url)
-        .then(response => response.text())
-        .then(script => {
-            eval(script);
-        });
-}
-
-// Função para carregar um arquivo CSS externo
-async function loadCss(url) {
-    return new Promise((resolve) => {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.type = 'text/css';
-        link.href = url;
-        link.onload = () => resolve();
-        document.head.appendChild(link);
-    });
-}
-
 // Função para modificar as questões (spoof)
 function spoofQuestion() {
     const phrases = [
@@ -261,4 +240,3 @@ loadScript('https://cdn.jsdelivr.net/npm/toastify-js').then(async () => {
     createUI();
     console.clear();
 });
-
