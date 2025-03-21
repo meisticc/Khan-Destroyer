@@ -167,9 +167,19 @@ function autoAnswer() {
                     }
                 }
 
-                // Look for the "Next Assignment" button
+                // Look for the "Next Assignment" button (skip video tasks)
                 const nextButton = document.querySelector('[aria-label="Next assignment"]') || document.querySelector('[aria-label="Continue"]');
-                if (nextButton) {
+                const videoElement = document.querySelector('.video-container');
+
+                if (videoElement) {
+                    // Skip the video
+                    const skipButton = document.querySelector('[aria-label="Skip video"]');
+                    if (skipButton) {
+                        skipButton.click();
+                        sendToast("🎥 Skipping video...", 3000);
+                        await delay(2000);
+                    }
+                } else if (nextButton) {
                     nextButton.click();
                     sendToast("🚀 Moving to the next assignment", 3000);
                     await delay(2000);
@@ -181,36 +191,59 @@ function autoAnswer() {
     })();
 }
 
-// Função para exibir a tela de inicialização (remover para evitar o popup de inicialização)
-async function showSplashScreen() {
-    // Removed splash screen as per the request to eliminate popups on start
+// Create the floating UI for Auto Answer toggle
+function createUI() {
+    const uiContainer = document.createElement('div');
+    uiContainer.style.position = 'fixed';
+    uiContainer.style.top = '10px';
+    uiContainer.style.right = '10px';
+    uiContainer.style.zIndex = '10000';
+    uiContainer.style.backgroundColor = 'black';
+    uiContainer.style.color = '#00ff00';
+    uiContainer.style.padding = '10px';
+    uiContainer.style.borderRadius = '5px';
+    uiContainer.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.5)';
+    uiContainer.style.cursor = 'pointer';
+    uiContainer.innerHTML = '<h3>Auto Answer</h3>';
+    
+    const toggleContainer = document.createElement('div');
+    toggleContainer.style.display = 'none'; // Hidden initially
+    toggleContainer.style.padding = '10px';
+    toggleContainer.style.backgroundColor = 'black';
+    toggleContainer.style.color = '#00ff00';
+    toggleContainer.style.borderRadius = '5px';
+    
+    const toggleLabel = document.createElement('label');
+    toggleLabel.innerText = 'Enable Auto Answer: ';
+    toggleContainer.appendChild(toggleLabel);
+    
+    const toggleSwitch = document.createElement('input');
+    toggleSwitch.type = 'checkbox';
+    toggleSwitch.checked = window.features.autoAnswer;
+    toggleSwitch.style.marginLeft = '10px';
+    toggleSwitch.addEventListener('change', () => {
+        window.features.autoAnswer = toggleSwitch.checked;
+        sendToast(window.features.autoAnswer ? "Auto Answer Enabled" : "Auto Answer Disabled", 3000);
+    });
+    toggleContainer.appendChild(toggleSwitch);
+    
+    uiContainer.appendChild(toggleContainer);
+    document.body.appendChild(uiContainer);
+
+    // Toggle the visibility of the settings container
+    uiContainer.addEventListener('click', () => {
+        toggleContainer.style.display = toggleContainer.style.display === 'none' ? 'block' : 'none';
+    });
 }
 
-// Função para exibir o popup de doação (removed to stop donation popups)
-function showDonationPopup() {
-    // Removed donation popup as per the request to eliminate popups on start
-}
-
-// Função para exibir o popup do Discord (removed to stop Discord popups)
-function showDiscordPopup() {
-    // Removed Discord popup as per the request to eliminate popups on start
-}
-
-// Verifica se o script está sendo executado no site correto (English version)
-if (/^https?:\/\/(pt\.)?khanacademy\.org/.test(window.location.href)) {
-    // If we're on a Portuguese version (pt.khanacademy.org), redirect to the English version
-    alert("❌ You are on the wrong site. Redirecting to the English site.");
-    window.location.href = "https://www.khanacademy.org/"; // Redirect to English version
-}
+// Initialize the UI
+createUI();
 
 // Carrega o Dark Reader e ativa o modo escuro
 loadScript('https://cdn.jsdelivr.net/npm/darkreader@4.9.92/darkreader.min.js').then(async () => {
     DarkReader.setFetchMethod(window.fetch);
     DarkReader.enable();
 });
-
-// Carrega o CSS do Toastify
-loadCss('https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css');
 
 // Carrega o Toastify e inicia as funcionalidades
 loadScript('https://cdn.jsdelivr.net/npm/toastify-js').then(async () => {
@@ -219,10 +252,4 @@ loadScript('https://cdn.jsdelivr.net/npm/toastify-js').then(async () => {
     spoofQuestion();
     autoAnswer();
     console.clear();
-
-    // Exibe a tela de inicialização (removed splash screen here)
-    // await showSplashScreen(); 
-
-    // Exibe o popup de doação (removed donation popup here)
-    // showDonationPopup();
 });
