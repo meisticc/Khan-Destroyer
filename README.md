@@ -26,7 +26,6 @@
 
 # TUTORIAL🎥
 **https://youtu.be/7LsXym8cR2I?si=KFdFucfcf4LTiLj6**
-*By:kontra*
 
 # Hack/script (copy)
 ⚠️ **ACTIVATE COMPUTER MODE TO USE ON CELL PHONE**⚠️
