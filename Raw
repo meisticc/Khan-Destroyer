@@ -2,13 +2,13 @@ const ver = "V3.0.5";
 
 // Configurações de atraso para as funcionalidades
 const featureConfigs = {
-    initialDelay: 2000, // Reduced initial delay for quicker action
-    subsequentDelays: [200, 1000, 300, 1000] // Reduced delays
+    initialDelay: 3000,
+    subsequentDelays: [300, 1500, 500, 2000]
 };
 
 // Configurações das funcionalidades
 window.features = {
-    autoAnswer: true,  // Ensure this is set to true to auto-answer
+    autoAnswer: true,
     questionSpoof: true
 };
 
@@ -59,22 +59,95 @@ function findAndClickByClass(className) {
     if (element) {
         element.click();
         if (element.textContent === 'Mostrar resumo') {
-            sendToast("🎉 Exercício concluído!", 3000);
+            sendToast("🎉 Exercício concluido!", 3000);
             playAudio('https://r2.e-z.host/4d0a0bea-60f8-44d6-9e74-3032a64a9f32/4x5g14gj.wav');
         }
     }
     return !!element;
 }
 
-// Função para detectar o botão "Próxima Atividade" (se disponível) e clicar nele
-function goToNextAssignment() {
-    const nextAssignmentButton = document.querySelector('button[data-next-assignment]'); // Adjust this selector based on the website's structure
-    if (nextAssignmentButton) {
-        nextAssignmentButton.click();
-        sendToast("🚀 Indo para a próxima atividade!", 3000);
-    } else {
-        console.log("Não encontrado 'Próxima Atividade'.");
-    }
+// Função para carregar um script externo
+async function loadScript(url, label) {
+    return fetch(url)
+        .then(response => response.text())
+        .then(script => {
+            eval(script);
+        });
+}
+
+// Função para carregar um arquivo CSS externo
+async function loadCss(url) {
+    return new Promise((resolve) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = url;
+        link.onload = () => resolve();
+        document.head.appendChild(link);
+    });
+}
+
+// Função para modificar as questões (spoof)
+function spoofQuestion() {
+    const phrases = [
+        "🎮💣 Games Destroyer On Top[Discord](https://discord.gg/gamesdest)!",
+        "❓ Made by [@iUnknownBr](https://guns.lol/iunknownbr).",
+        "🏂 Made by [Snow](https://guns.lol/imsnow)"
+    ];
+
+    const originalFetch = window.fetch;
+    window.fetch = async function (input, init) {
+        let body;
+        if (input instanceof Request) body = await input.clone().text();
+        else if (init && init.body) body = init.body;
+
+        const originalResponse = await originalFetch.apply(this, arguments);
+        const clonedResponse = originalResponse.clone();
+
+        try {
+            const responseBody = await clonedResponse.text();
+            let responseObj = JSON.parse(responseBody);
+
+            if (responseObj?.data?.assessmentItem?.item?.itemData) {
+                let itemData = JSON.parse(responseObj.data.assessmentItem.item.itemData);
+
+                if (itemData.question.content[0] === itemData.question.content[0].toUpperCase()) {
+                    itemData.answerArea = {
+                        "calculator": false,
+                        "chi2Table": false,
+                        "periodicTable": false,
+                        "tTable": false,
+                        "zTable": false
+                    };
+
+                    itemData.question.content = phrases[Math.floor(Math.random() * phrases.length)] + `[[☃ radio 1]]`;
+                    itemData.question.widgets = {
+                        "radio 1": {
+                            options: {
+                                choices: [
+                                    { content: "Resposta correta.", correct: true },
+                                    { content: "Resposta Errada.", correct: false }
+                                ]
+                            }
+                        }
+                    };
+
+                    responseObj.data.assessmentItem.item.itemData = JSON.stringify(itemData);
+                    sendToast("🔓 Questão Bypassed.", 1000);
+
+                    return new Response(JSON.stringify(responseObj), {
+                        status: originalResponse.status,
+                        statusText: originalResponse.statusText,
+                        headers: originalResponse.headers
+                    });
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        return originalResponse;
+    };
 }
 
 // Função para responder automaticamente às questões
@@ -94,9 +167,13 @@ function autoAnswer() {
                     }
                 }
 
-                // After completing the current task, move to the next assignment
-                goToNextAssignment();
-                await delay(3000); // Pause before moving to the next task
+                // Look for the "Next Assignment" button
+                const nextButton = document.querySelector('[aria-label="Next assignment"]') || document.querySelector('[aria-label="Continue"]');
+                if (nextButton) {
+                    nextButton.click();
+                    sendToast("🚀 Moving to the next assignment", 3000);
+                    await delay(2000);
+                }
             } else {
                 await delay(1000);
             }
@@ -104,94 +181,24 @@ function autoAnswer() {
     })();
 }
 
-// Função para exibir a tela de inicialização
+// Função para exibir a tela de inicialização (remover para evitar o popup de inicialização)
 async function showSplashScreen() {
-    const splashScreen = document.createElement('div');
-    splashScreen.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        opacity: 0;
-        transition: opacity 0.5s ease;
-        user-select: none;
-        color: white;
-        font-family: MuseoSans, sans-serif;
-        font-size: 30px;
-        text-align: center;
-    `;
-    splashScreen.innerHTML = '<span style="color:white;">KHAN </span><span style="color:#00ff00;">DESTROYER</span>';
-    document.body.appendChild(splashScreen);
-    setTimeout(() => splashScreen.style.opacity = '1', 10);
-
-    await delay(2000);
-    splashScreen.style.opacity = '0';
-    await delay(1000);
-    splashScreen.remove();
+    // Removed splash screen as per the request to eliminate popups on start
 }
 
-// Função para exibir o popup de doação
+// Função para exibir o popup de doação (removed to stop donation popups)
 function showDonationPopup() {
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #1e1e1e;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px #00ff00;
-        z-index: 10000;
-        text-align: center;
-        color: white;
-        font-family: Arial, sans-serif;
-    `;
-    popup.innerHTML = `
-        <div style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: red; font-size: 20px;" onclick="this.parentElement.remove(); showDiscordPopup();">×</div>
-        <img src="https://i.imgur.com/t4mfuJU.png" alt="Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
-        <h2 style="color: #00ff00; text-shadow: 0 0 5px #00ff00;">Contribua com o projeto</h2>
-        <p style="font-size: 14px;">Sua ajuda é necessária para manter e atualizar o projeto. Qualquer doação é bem-vinda!</p>
-        <button onclick="window.open('https://pixgg.com/im_snow', '_blank');" style="background-color: #00ff00; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Doar</button>
-    `;
-    document.body.appendChild(popup);
+    // Removed donation popup as per the request to eliminate popups on start
 }
 
-// Função para exibir o popup do Discord
+// Função para exibir o popup do Discord (removed to stop Discord popups)
 function showDiscordPopup() {
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #1e1e1e;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px #00ff00;
-        z-index: 10000;
-        text-align: center;
-        color: white;
-        font-family: Arial, sans-serif;
-    `;
-    popup.innerHTML = `
-        <div style="position: absolute; top: 10px; right: 10px; cursor: pointer; color: red; font-size: 20px;" onclick="this.parentElement.remove();">×</div>
-        <img src="https://i.imgur.com/t4mfuJU.png" alt="Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
-        <h2 style="color: #00ff00; text-shadow: 0 0 5px #00ff00;">Entre no nosso servidor</h2>
-        <p style="font-size: 14px;">Junte-se à nossa comunidade no Discord para mais atualizações e suporte!</p>
-        <button onclick="window.open('https://discord.gg/gamesdest', '_blank');" style="background-color: #00ff00; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px;">Entrar no servidor</button>
-    `;
-    document.body.appendChild(popup);
+    // Removed Discord popup as per the request to eliminate popups on start
 }
 
 // Verifica se o script está sendo executado no site correto (English version)
 if (/^https?:\/\/(pt\.)?khanacademy\.org/.test(window.location.href)) {
+    // If we're on a Portuguese version (pt.khanacademy.org), redirect to the English version
     alert("❌ You are on the wrong site. Redirecting to the English site.");
     window.location.href = "https://www.khanacademy.org/"; // Redirect to English version
 }
@@ -200,15 +207,6 @@ if (/^https?:\/\/(pt\.)?khanacademy\.org/.test(window.location.href)) {
 loadScript('https://cdn.jsdelivr.net/npm/darkreader@4.9.92/darkreader.min.js').then(async () => {
     DarkReader.setFetchMethod(window.fetch);
     DarkReader.enable();
-
-    // Exibe o aviso "HACK ATIVO ENTRE NA ATIVIDADE"
-    sendToast("HACK ATIVO ENTRE NA ATIVIDADE", 5000, 'top', null, '20px', 'Arial, sans-serif', '#00ff00');
-
-    // Aguarda 1 segundo antes de exibir o toast do Dark Mode
-    await delay(1000);
-
-    // Exibe o toast do Dark Mode com a imagem
-    sendToast("🌑 Dark Mode ativado!", 2000, 'bottom', 'https://cdn.discordapp.com/attachments/1326756804889280553/1351333793306247220/6c0df6a95ea7f835588f586a11bdbd4e.png?ex=67d9ff2a&is=67d8adaa&hm=1992d77fc05bd65a4417da3e860cead36b2d62395a28f1b6598d43a0ab953cc0&');
 });
 
 // Carrega o CSS do Toastify
@@ -222,9 +220,9 @@ loadScript('https://cdn.jsdelivr.net/npm/toastify-js').then(async () => {
     autoAnswer();
     console.clear();
 
-    // Exibe a tela de inicialização
-    await showSplashScreen();
+    // Exibe a tela de inicialização (removed splash screen here)
+    // await showSplashScreen(); 
 
-    // Exibe o popup de doação
-    showDonationPopup();
+    // Exibe o popup de doação (removed donation popup here)
+    // showDonationPopup();
 });
